@@ -15,11 +15,11 @@
     <Button icon="pi pi-sign-out" class="ml-auto" @click="handleLogout" />
   </div>
 
-  <div v-if="!sesion" class="w-[300px] justify-self-center mt-[100px]">
+  <div v-if="!sesion" class="bc-logo w-[300px] mt-[100px]">
     <img width="148" height="180" src="https://basquetcoruna.com/wp-content/uploads/2025/04/basquet-coruna.svg" class="attachment-full size-full wp-image-47" alt="">
   </div>
 
-  <div v-if="sesion" class="current-session">Sesión actual: {{ sesion }}</div>
+  <div v-if="sesion" class="current-session">Sesión: {{ sesion }}</div>
 
   <div v-if="sesion" class="gym-table-container">
     <Tabs value="0">
@@ -248,5 +248,8 @@ const handleLogout = async () => {
   font-size: 26px;
   font-weight: bold;
   margin: 20px 0;
+}
+.bc-logo {
+  justify-self: center;
 }
 </style>
