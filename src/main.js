@@ -16,6 +16,8 @@ import TabPanel from 'primevue/tabpanel'
 import TabList from 'primevue/tablist'
 import Tab from 'primevue/tab'
 import TabPanels from 'primevue/tabpanels'
+import DatePicker from 'primevue/datepicker'
+import Dialog from 'primevue/dialog'
 
 import './tailwind/styles.css'
 
@@ -41,5 +43,7 @@ app.component('TabPanel', TabPanel)
 app.component('TabList', TabList)
 app.component('Tab', Tab)
 app.component('TabPanels', TabPanels)
+app.component('DatePicker', DatePicker)
+app.component('Dialog', Dialog)
 
 app.mount('#app')

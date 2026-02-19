@@ -1,4 +1,28 @@
 <template>
+  <Dialog v-model:visible="openSesionDialog" modal header="AÑADIR SESION" :style="{ width: '25rem' }">
+    <span class="text-surface-500 dark:text-surface-400 block mb-[24px]">Crea aquí una nueva sesión de gimnasio</span>
+    <div class="flex items-center gap-[4px] mb-[18px]">
+        <label for="username" class="font-semibold w-24">Nombre de la sesión</label>
+        <DatePicker v-model="sesionName" dateFormat="dd-mm-yy" updateModelType="string" />
+    </div>
+    <div class="flex justify-end gap-[8px]">
+        <Button type="button" label="Cancelar" severity="secondary" @click="openSesionDialog = false"></Button>
+        <Button type="button" label="Guardar" @click="agregarSesion"></Button>
+    </div>
+  </Dialog> 
+
+  <Dialog v-model:visible="openJugadoraDialog" modal header="AÑADIR JUGADORA" :style="{ width: '25rem' }">
+    <span class="text-surface-500 dark:text-surface-400 block mb-[24px]">Crea aquí una nueva jugadora</span>
+    <div class="flex items-center gap-[4px] mb-[18px]">
+        <label for="username" class="font-semibold w-24">Nombre de la jugadora</label>
+        <InputText v-model="jugadoraName"  />
+    </div>
+    <div class="flex justify-end gap-[8px]">
+        <Button type="button" label="Cancelar" severity="secondary" @click="openJugadoraDialog = false"></Button>
+        <Button type="button" label="Guardar" @click="agregarJugadora"></Button>
+    </div>
+  </Dialog>
+
   <div class="buttons-container">
     <Drawer v-model:visible="visible" header="Sesiones">
       <div class="sesiones-list">
@@ -8,10 +32,10 @@
         </Button>
       </div>
 
-      <Button @click="agregarSesion">Añadir Sesión</Button>
+      <Button @click="openSesionDialog = true">Añadir Sesión</Button>
     </Drawer>
     <Button icon="pi pi-arrow-right" @click="visible = true" />
-    <Button v-if="sesion" @click="agregarJugadora">Añadir Jugadora</Button>
+    <Button v-if="sesion" @click="openJugadoraDialog = true">Añadir Jugadora</Button>
     <Button icon="pi pi-sign-out" class="ml-auto" @click="handleLogout" />
   </div>
 
@@ -127,11 +151,15 @@ import { collection, getDocs, addDoc, updateDoc, doc, setDoc } from 'firebase/fi
 import 'primeicons/primeicons.css'
 import { logout } from '../services/auth'
 
-const semana = ref(1)
 const jugadoras = ref([])
 const visible = ref(false)
 const sesiones = ref([])
 const sesion = ref('')
+const openSesionDialog = ref(false)
+const sesionName = ref('')
+const openJugadoraDialog = ref(false)
+const jugadoraName = ref('')
+
 
 onMounted(async () => {
   await cargarSesiones()
@@ -155,13 +183,15 @@ async function toggleEjercicio(jugadora, index, value) {
 }
 
 async function agregarJugadora() {
-  const nombre = prompt("Nombre de la jugadora")
+  const nombre = jugadoraName.value
   if (!nombre) return
   const docRef = await addDoc(collection(db, `semanas`, sesion.value, "jugadoras"), {
     nombre,
     ejercicios: Array(15).fill('-')
   })
   jugadoras.value.push({ id: docRef.id, nombre, ejercicios: Array(15).fill('-') })
+  openJugadoraDialog.value = false
+  jugadoraName.value = ''
 }
 
 async function seleccionarSesion(s) {
@@ -177,10 +207,11 @@ async function cargarSesiones() {
 }
 
 async function agregarSesion() {
-  const s = prompt("Nombre de la sesión")
-  if (!s) return
-  await setDoc(doc(db, "semanas", s), {})
-  sesiones.value.push(s)
+  openSesionDialog.value = false
+  if (!sesionName.value) return
+  await setDoc(doc(db, "semanas", sesionName.value), {})
+  sesiones.value.push(sesionName.value)
+  sesionName.value = ''
 }
 
 async function marcarBloqueCompleto(jugadora, index, value) {
